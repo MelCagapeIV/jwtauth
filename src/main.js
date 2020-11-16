@@ -6,8 +6,11 @@ import Signup from './components/Signup';
 import Login from './components/Login';
 import Home from './components/Home';
 import store from './store';
+import axios from 'axios';
 
 Vue.use(VueRouter);
+
+axios.defaults.baseURL = process.env.VUE_APP_BASE_NODE_URL;
 
 const routes = [
   { path: '/', component: HelloWorld },
