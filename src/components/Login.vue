@@ -26,8 +26,9 @@ export default {
                 password: this.password
             };
 
-            const serverUrl = process.env.VUE_APP_BASE_NODE_URL + '/login';
+            const serverUrl = process.env.VUE_APP_BASE_NODE_URL + process.env.VUE_APP_AUTH_PATH + '/login';
 
+            console.log(serverUrl);
             axios.post(serverUrl, user)
                 .then(res => {
                     if (res.status === 200) {
@@ -36,8 +37,8 @@ export default {
                     }
                 },
                 err => {
-                    console.log(err.response);
-                    this.error = err.response.data.error;
+                    console.log(err);
+                    this.error = err;
                 });
         }
     }

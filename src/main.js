@@ -5,6 +5,7 @@ import HelloWorld from './components/HelloWorld';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import Home from './components/Home';
+import store from './store';
 
 Vue.use(VueRouter);
 
@@ -25,5 +26,6 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')

@@ -6,11 +6,9 @@
         <button @click="signup">Signup</button>
     </div>
 </template>
+
 <script>
 import axios from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 export default {
     name: 'Signup',
@@ -29,7 +27,7 @@ export default {
                 password: this.password
             };
 
-            const serverUrl = process.env.VUE_APP_BASE_NODE_URL + '/signup';
+            const serverUrl = process.env.VUE_APP_BASE_NODE_URL + process.env.VUE_APP_AUTH_PATH + '/signup';
 
             axios.post(serverUrl, newUser)
                 .then(res => {

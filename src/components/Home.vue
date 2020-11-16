@@ -3,12 +3,19 @@
         Hello {{ name }}<br />
         Your email is {{ email }}<br />
         <button @click="logout">Logout</button>
+
+        <Users />
     </div>
 </template>
 <script>
 import axios from 'axios';
+import Users from './Users.vue';
+
 export default {
     name: 'Home',
+    components: {
+        Users
+    },
     data() {
         return {
             name: '',
@@ -21,8 +28,8 @@ export default {
         }
     },
     mounted() {
-        const userUrl = process.env.VUE_APP_BASE_NODE_URL + '/user';
-        axios.get(userUrl, { header: { token: localStorage.getItem('token') } })
+        const userUrl = process.env.VUE_APP_BASE_NODE_URL + process.env.VUE_APP_AUTH_PATH + '/user';
+        axios.get(userUrl, { headers: { 'token': localStorage.getItem('token') } })
             .then(res => {
                 console.log(res.data);
                 this.name = res.data.user.name;
