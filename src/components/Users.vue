@@ -1,39 +1,53 @@
 <template>
     <div>
         <h3>Users</h3>
-        
-        <div v-bind:key="user.id" v-for="user in users">
-            <User v-bind:user="user" /> 
+        <div class="users">
+            <div v-for="user in allUsers" :key="user.email" class="user">
+                {{ user.email }} <br />
+                {{ user.name }}
+                <i @click="deleteUser(user.email)" class="fas fa-trash-alt"></i>
+            </div>
         </div>
-        
     </div>
 </template>
 
 <script>
-import axios from 'axios';
-import User from './User';
-
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
     name: 'Users',
-    components: {
-        User
+    methods: {
+        ...mapActions(['fetchUsers', 'deleteUser'])
     },
-    data() {
-        return {
-            users: []
-        };
-    },
+    computed: mapGetters(['allUsers']),
     mounted() {
-        const userUrl = process.env.VUE_APP_BASE_NODE_URL + process.env.VUE_APP_AUTH_PATH + '/all';
-        axios.get(userUrl, { headers: { 'token': localStorage.getItem('token') } })
-            .then(res => {
-                console.log(res.data);
-                this.users = res.data.users;
-            }, err => {
-                console.log(err);
-                this.$router.push('/login');
-            });
+        this.fetchUsers();
     }
 }
 </script>
+
+<style scoped>
+.users {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1rem;
+}
+
+.user {
+    border: 1px solid #ccc;
+    background: #41b883;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+}
+
+i {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: #fff;
+    cursor: pointer;
+}
+</style>

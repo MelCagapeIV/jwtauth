@@ -110,11 +110,40 @@ router.get('/all', (req, res, next) => {
         User.find({}, (err, users) => {
             if (err) return console.log(err);
             return res.status(200).json({
-                title: 'user grabbed',
+                title: 'users grabbed',
                 users: users
             });
         });
     });
 });
+
+router.delete('/delete/:email', (req, res, next) => {
+    let token = req.headers.token;
+    console.info(req.headers);
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(401).json({
+            title: 'unauthorized',
+            error: err
+        });
+
+        User.deleteOne({ "email" : req.params.email })
+            .then(result => {
+                console.log(`Deleted ${result.deletedCount} item.`);
+
+                res.status(200).json({
+                    title: 'user deleted',
+                    count: result.deletedCount
+                });
+            })
+            .catch(err => {
+                console.error(`Delete failed with error: ${err}`);
+
+                res.status(401).json({
+                    title: 'failed to delete user',
+                    error: err
+                });
+            });
+    });
+})
 
 module.exports = router;
