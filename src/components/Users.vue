@@ -1,6 +1,7 @@
 <template>
     <div>
         <h3>Users</h3>
+        <FilterUsers />
         <div class="users">
             <div v-for="user in allUsers" :key="user.email" class="user">
                 {{ user.email }} <br />
@@ -12,16 +13,20 @@
 </template>
 
 <script>
+import FilterUsers from './FilterUsers';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
     name: 'Users',
+    components: {
+        FilterUsers
+    },
     methods: {
         ...mapActions(['fetchUsers', 'deleteUser'])
     },
     computed: mapGetters(['allUsers']),
     mounted() {
-        this.fetchUsers();
+        this.fetchUsers(0);
     }
 }
 </script>

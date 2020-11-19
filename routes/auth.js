@@ -27,14 +27,20 @@ router.post('/signup', async (req, res, next) => {
         password: bcrypt.hashSync(req.body.password, parseInt(process.env.SALT))
     });
 
-    console.log(newUser);
-
     try{
         const savedUser = await newUser.save();
-        res.status(200).send(savedUser);
+        res.status(200).json({
+            title: 'User added.',
+            user: {
+                email: savedUser.email,
+                name: savedUser.name
+            }
+        });
     } catch(err) {
-        res.status(400).send(err);
-        console.error(err);
+        res.status(400).json({
+            title: 'failed to add user!',
+            error: err
+        });
     }
 });
 
@@ -68,7 +74,7 @@ router.post('/login', (req, res, next) => {
             });
         }
 
-        let token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY);
+        let token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, process.env.SECRET_KEY);
         return res.status(200).json({
             title: 'login successful.',
             token: token
@@ -98,7 +104,7 @@ router.get('/user', (req, res, next) => {
     });
 });
 
-router.get('/all', (req, res, next) => {
+router.get('/all/:limit', (req, res, next) => {
     let token = req.headers.token;
     console.info(req.headers);
     jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
@@ -107,13 +113,27 @@ router.get('/all', (req, res, next) => {
             error: err
         });
 
-        User.find({}, (err, users) => {
-            if (err) return console.log(err);
-            return res.status(200).json({
-                title: 'users grabbed',
-                users: users
+        let limit = parseInt(req.params.limit);
+        
+        if (limit > 0) {
+            User.find({}, (err, users) => {
+                if (err) return console.log(err);
+
+                return res.status(200).json({
+                    title: 'users grabbed (limited)',
+                    users: users.map(basicUser)
+                });
+            }).limit(limit);
+        } else {
+            User.find({}, (err, users) => {
+                if (err) return console.log(err);
+                
+                return res.status(200).json({
+                    title: 'users grabbed',
+                    users: users.map(basicUser)
+                });
             });
-        });
+        }
     });
 });
 
@@ -145,5 +165,12 @@ router.delete('/delete/:email', (req, res, next) => {
             });
     });
 })
+
+function basicUser(user) {
+    return {
+        email: user.email,
+        name: user.name
+    }
+}
 
 module.exports = router;
